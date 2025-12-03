@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Raquel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.error {
+            border-color: #ff4757;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .btn-calcular {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-calcular:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-calcular:active {
+            transform: translateY(0);
+        }
+
+        .resultado {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .resultado.aprobado {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+
+        .resultado.desaprobado {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .emoji {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .promedio-numero {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .estado {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mensaje {
+            font-size: 1.1em;
+            margin-top: 15px;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        .error-msg {
+            color: #ff4757;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .promedio-numero {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Calculadora de Promedio</h1>
+        <p class="subtitle">Ingresa tus 4 notas del bimestre (0-20)</p>
+        
+        <form id="formNotas">
+            <div class="input-group">
+                <label for="nota1">📝 Nota 1:</label>
+                <input type="number" id="nota1" min="0" max="20" step="1" placeholder="Haz clic para ingresar la primera nota">
+                <span class="error-msg" id="error1">Por favor ingresa una nota válida entre 0 y 20</span>
+            </div>
+
+            <div class="input-group">
+                <label for="nota2">📝 Nota 2:</label>
+                <input type="number" id="nota2" min="0" max="20" step="1" placeholder="Haz clic para ingresar la segunda nota">
+                <span class="error-msg" id="error2">Por favor ingresa una nota válida entre 0 y 20</span>
+            </div>
+
+            <div class="input-group">
+                <label for="nota3">📝 Nota 3:</label>
+                <input type="number" id="nota3" min="0" max="20" step="1" placeholder="Haz clic para ingresar la tercera nota">
+                <span class="error-msg" id="error3">Por favor ingresa una nota válida entre 0 y 20</span>
+            </div>
+
+            <div class="input-group">
+                <label for="nota4">📝 Nota 4:</label>
+                <input type="number" id="nota4" min="0" max="20" step="1" placeholder="Haz clic para ingresar la cuarta nota">
+                <span class="error-msg" id="error4">Por favor ingresa una nota válida entre 0 y 20</span>
+            </div>
+
+            <button type="submit" class="btn-calcular">Calcular Promedio</button>
+        </form>
+
+        <div id="resultado" class="resultado"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('formNotas');
+        const resultado = document.getElementById('resultado');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Limpiar errores previos
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('error');
+            });
+            document.querySelectorAll('.error-msg').forEach(msg => {
+                msg.style.display = 'none';
+            });
+
+            // Obtener valores
+            const nota1 = document.getElementById('nota1').value;
+            const nota2 = document.getElementById('nota2').value;
+            const nota3 = document.getElementById('nota3').value;
+            const nota4 = document.getElementById('nota4').value;
+
+            let esValido = true;
+
+            // Validar cada nota
+            function validarNota(valor, id, errorId) {
+                if (valor === '' || valor === null) {
+                    document.getElementById(id).classList.add('error');
+                    document.getElementById(errorId).style.display = 'block';
+                    esValido = false;
+                    return null;
+                }
+                
+                const nota = parseFloat(valor);
+                if (isNaN(nota) || nota < 0 || nota > 20) {
+                    document.getElementById(id).classList.add('error');
+                    document.getElementById(errorId).style.display = 'block';
+                    esValido = false;
+                    return null;
+                }
+                
+                return nota;
+            }
+
+            const n1 = validarNota(nota1, 'nota1', 'error1');
+            const n2 = validarNota(nota2, 'nota2', 'error2');
+            const n3 = validarNota(nota3, 'nota3', 'error3');
+            const n4 = validarNota(nota4, 'nota4', 'error4');
+
+            if (!esValido) {
+                return;
+            }
+
+            // Calcular promedio
+            const promedio = (n1 + n2 + n3 + n4) / 4;
+            const promedioRedondeado = promedio.toFixed(2);
+
+            // Determinar si aprobó o no
+            const aprobo = promedio >= 13;
+
+            // Mostrar resultado
+            resultado.style.display = 'block';
+            resultado.className = 'resultado ' + (aprobo ? 'aprobado' : 'desaprobado');
+
+            if (aprobo) {
+                resultado.innerHTML = `
+                    <div class="emoji">😊✨</div>
+                    <div class="promedio-numero">${promedioRedondeado}</div>
+                    <div class="estado">✅ Aprobado</div>
+                    <div class="mensaje">¡Sigue así! Tu esfuerzo está dando excelentes resultados. ¡Felicitaciones! 🎉</div>
+                `;
+            } else {
+                resultado.innerHTML = `
+                    <div class="emoji">😢💪</div>
+                    <div class="promedio-numero">${promedioRedondeado}</div>
+                    <div class="estado">❌ Desaprobado</div>
+                    <div class="mensaje">¡Esfuérzate en el otro bimestre! Cada error es una oportunidad para aprender y crecer. ¡Tú puedes! 💪✨</div>
+                `;
+            }
+
+            // Scroll suave al resultado
+            resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        // Limpiar error cuando el usuario escribe
+        document.querySelectorAll('input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+                document.getElementById(`error${index + 1}`).style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
